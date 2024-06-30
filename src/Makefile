@@ -1,13 +1,13 @@
 
-output: main.o HttpHandler.o response.o server.o
+output: main.o http_handler.o response.o server.o
 # take object files and create an executable called output 
-	g++ main.o HttpHandler.o response.o server.o -o output
+	g++ main.o http_handler.o response.o server.o -o output
 
 main.o: main.cpp
 	g++ -c main.cpp 
 
-HttpHandler.o: HttpHandler/HttpHandler.cpp HttpHandler/HttpHandler.hpp 
-	g++ -c HttpHandler/HttpHandler.cpp 
+http_handler.o: HttpHandler/http_handler.cpp HttpHandler/http_handler.hpp 
+	g++ -c HttpHandler/http_handler.cpp 
 
 response.o: response/response.cpp response/response.hpp 
 	g++ -c response/response.cpp 
