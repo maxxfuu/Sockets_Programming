@@ -1,5 +1,8 @@
 #include <sys/socket.h> 
 
+#include <sys/types.h> 
+#include <netdb.h>
+
 
 //socket descriptors is a type int. 
 
@@ -62,3 +65,8 @@ struct in6_addr {
 // Client Side: Client initates a TCP connection, it binds to a local port number. 
 //              specifying the IP  destination IP address  and  port number. 
 
+
+int getaddrinfo(const char *node, 
+                const char *service, 
+                const struct addrinfo *hints, 
+                struct addrinfo **res);
