@@ -57,9 +57,9 @@ struct sockaddr_in6 {
     u_int32_t       sin6_scope_id; // Scope ID
 };
 
-struct in6_addr {
-    unsigned char   s6_addr[16];   // IPv6 address
-};
+// struct in6_addr {
+//     unsigned char   s6_addr[16];   // IPv6 address
+// };
 
 
 // Client Side: Client initates a TCP connection, it binds to a local port number. 
