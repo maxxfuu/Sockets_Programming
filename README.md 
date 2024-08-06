@@ -1,0 +1,21 @@
+# Chapter 1 
+Sockets in general is a mechanism for communication between programs using standard UNIX file descriptors. 
+Meaning you can read(), write(), and close; UNIX file descriptors are simply non-negative integers that acts as handles 
+fto open files or resources which allows easy access and management. 
+
+EXAMPLE CODE
+int fd = open("example.txt", O_RDONLY); // Open the file
+char buffer[256];
+read(fd, buffer, 256); // Read 256 bytes
+close(fd); // Close the file
+
+
+Sockets are essentially a way to create communication endpoints between two programs, enabling them to exchange data. 
+However, in the case that the file descriptors associated with the open files are given by the socket() API in the context of 
+network programming, the file descriptor returned by the socket API is the descriptor that can be used with speicalized socket 
+functions where the signature of the send(), rec(), write(), read() are related to network programming. 
+
+
+In short, socket exchange data. It could be in the context of network programming or in the unix domain. 
+
+
