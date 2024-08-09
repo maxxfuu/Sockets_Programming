@@ -5,7 +5,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
-# define PORT 8000 // Up for definition 
+# define PORT 8080 // Up for definition 
 
 int main() { 
 
@@ -14,7 +14,7 @@ int main() {
 
     // (Step 1:) Create a socket. 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        perror("Socke Failed: "); 
+        perror("Socket Failed: "); 
         exit(EXIT_FAILURE); 
     }
     

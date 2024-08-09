@@ -2,61 +2,75 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <arpa/inet.h>
-#include <sys/socket.h> 
+#include <sys/types.h> 
+#include <sys/socket.h>
+#include <netdb.h>
 
-
-#define PORT 8080 
+#define MYPORT "8080" 
 #define BACKLOG 5 
 
-int main() { 
+int main(void) { 
+    struct sockaddr_storage client_addr;
+    struct sockaddr_in serv_addr; 
+    socklen_t client_addr_len = sizeof(client_addr);
+    struct addrinfo hints, *res;
+    int sockfd, new_fd; // listening file descriptor, connection file descriptor 
+    int status; 
 
-    int listenfd, connfd; // listening file descriptor, connection file descriptor 
-    struct sockaddr_in serv_addr, client_addr; 
-
-    socklen_t client_addr_len = sizeof(client_addr); 
-
-    // (Step 1) Creating a listening socket for the server. 
-    if (listenfd = socket(AF_INET, SOCK_STREAM, 0) < 0) { 
-        perror("Socket creation failed"); 
-        close(listenfd); 
-        exit(EXIT_FAILURE);
-    }
 
     // (Step 3) Prepare the sockaddr_in structure 
-    memset(&serv_addr, 0, sizeof(serv_addr));  
-    serv_addr.sin_family = AF_INET; 
-    serv_addr.sin_addr.s_addr = INADDR_ANY; 
-    serv_addr.sin_port = htons(PORT); 
+    memset(&hints, 0, sizeof(serv_addr));  
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM; 
+    hints.ai_flags= AI_PASSIVE; 
 
-    if (bind(listenfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0 ) { 
+    status = getaddrinfo(NULL, MYPORT, &hints, &res); 
+    if (status != 0) {
+        fprintf(stderr, "getaddrinfo error: %s\n", gai_strerror(status));
+        return 1;
+    }
+
+    // (Step 1) Creating a listening socket for the server. 
+
+    sockfd = socket(res->ai_family, res->ai_socktype, res->ai_protocol); 
+    if (sockfd < 0)  {
+        perror("Socket Creation Failed"); 
+        freeaddrinfo(res); 
+        return 1; 
+    }
+
+    if (bind(sockfd, res->ai_addr, res->ai_addrlen) < 0 ) { 
         perror("Bind failed"); 
-        close(listenfd); 
-        exit(EXIT_FAILURE); 
+        freeaddrinfo(res); 
+        return 1; 
     }
 
-    // Listen for incoming connections 
-    if (listen(listenfd, BACKLOG) < 0) { 
+    freeaddrinfo(res); 
+    
+    if (listen(sockfd, BACKLOG) == -1) { 
         perror("Listen Failed"); 
-        close(listenfd); 
+        close(sockfd); 
         exit(EXIT_FAILURE); 
     } 
 
-    printf("Server Listening on port %d\n", PORT); 
+    printf("Server Listening on port %s\n", MYPORT); 
 
-    // Accept incoming connection. 
-    while((connfd = accept(listenfd, (struct sockaddr *)&client_addr, &client_addr_len))) {
-        printf("Connection Accepted!"); 
-        close(connfd); 
-    }
-
-    if (connfd < 0) { 
-        perror("Accept failed"); 
-        close(listenfd); 
-        exit(EXIT_FAILURE); 
+    // Accept for incoming connections 
+    client_addr_len = sizeof(client_addr); 
+    new_fd = accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len); 
+    if (new_fd == -1) { 
+        perror("Accept Failed"); 
+        close(sockfd); 
+        return 1; 
     } 
+    
+    printf("Connection accepted\n");
 
-    close(listenfd); 
+
+    close(new_fd); 
+   
+
+    close(sockfd); 
     return 0; 
 
 }
