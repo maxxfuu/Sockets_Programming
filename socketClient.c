@@ -37,11 +37,10 @@ int main() {
         exit(EXIT_FAILURE); 
     }
 
+    // Hooray... Maybe ??? 
     printf("Connected to server on 127.0.0.1\n"); 
-    
-    // int connect(int sockfd, struct sockaddr *serv_addr, int addrlen); 
-    // if (connect(sockfd, ))
 
+    // Conncet... 
 
     close(sockfd); 
     return 0; 
