@@ -30,7 +30,9 @@ int main() {
     struct sockaddr_in serv_addr; // Initalizng a struct object representing server address. ( 4 fields )
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT); 
-    serv_addr.sin_addr = INADDR_ANY;  
+    serv_addr.sin_addr.s_addr = INADDR_ANY;  
+    
+    
 
 
 
