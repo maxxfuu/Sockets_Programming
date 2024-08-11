@@ -42,11 +42,11 @@ int main() {
 
     // Conncet... 
 
-    close(sockfd); 
+    // Send to and recieve after connnecting.  
+
+    closm(sockfd); 
     return 0; 
 
 } 
-
-
 
 // socket(Specifies IPv4 or IPv6, Specifies TCP or UDP and SOCK_STREAM is TCP, 0 lets the system choose the appropriate protocol
