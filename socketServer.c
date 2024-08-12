@@ -5,22 +5,22 @@
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netdb.h>
+#include <pthread/pthread.h>
 
 #define MYPORT "8080" 
 #define BACKLOG 5 
 #define MAX_CLIENT 100 
 
+int client_sockets[MAX_CLIENT]; 
+pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER; 
 
-int client_sockets[MAX_CLIENT] 
-pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITALIZER; 
-
-void *handle_clint(void *arg) {
+void *handle_client(void *arg) {
 
     int client_socket = *(int *)arg; // type casting and dereferencing operation 
     char buffer[1024]; 
     int bytes_received; 
 
-    while ((bytes_received = recv(clinet_socket, buffer, sizeof(buffer) , 0)) > 0 ) {
+    while ((bytes_received = recv(client_socket, buffer, sizeof(buffer) , 0)) > 0 ) {
 
         buffer[bytes_received] = '\0'; 
         printf("Received: %s\n", buffer); 
@@ -28,24 +28,24 @@ void *handle_clint(void *arg) {
         // Broadcast mesage to all other clients
         pthread_mutex_lock(&clients_mutex); 
         for(int i = 0; i < MAX_CLIENT; i++) { 
-            if(clinet_sockets[i] != 0 && client_sockets[i] != clinet_socket) {
+            if(client_sockets[i] != 0 && client_sockets[i] != client_socket) {
                 send(client_sockets[i], buffer, bytes_received, 0); 
             }
         }
-        pthread_mutex_unlock(&clinets_mutex); 
+        pthread_mutex_unlock(&clients_mutex); 
     }
 
 
     // Remove client from list and close socket 
-    pthread_mutex_lock(&client_mutex); 
+    pthread_mutex_lock(&clients_mutex); 
     for (int i = 0; i < MAX_CLIENT; i++) {
-        if (client_sockets[i] == client socket) {
-            client_socket[i] = 0; 
+        if (client_sockets[i] == client_socket) {
+            client_sockets[i] = 0; 
             break; 
         } 
     }
 
-    pthread_mutex_unlock(&client_mutex); 
+    pthread_mutex_unlock(&clients_mutex); 
 
     close(client_socket); 
     return NULL; 
@@ -56,8 +56,9 @@ int main(void) {
     struct sockaddr_in serv_addr; 
     socklen_t client_addr_len = sizeof(client_addr);
     struct addrinfo hints, *res;
-    int sockfd, new_fd; // listening file descriptor, connection file descriptor 
+    int sockfd, *new_fd; // listening file descriptor, connection file descriptor 
     int status; 
+    pthread_t tid; 
 
 
     // (Step 3) Prepare the sockaddr_in structure 
@@ -98,19 +99,34 @@ int main(void) {
     printf("Server Listening on port %s\n", MYPORT); 
 
     // Accept for incoming connections 
-    client_addr_len = sizeof(client_addr); 
-    new_fd = accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len); 
-    if (new_fd == -1) { 
-        perror("Accept Failed"); 
-        close(sockfd); 
-        return 1; 
+    while(1) {
+        client_addr_len = sizeof(client_addr); 
+        new_fd = malloc(sizeof(int)); // To allocate memory for the new socket descriptor 
+        *new_fd = accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len); 
+        if (*new_fd == -1) { 
+            perror("Accept Failed"); 
+            free(new_fd); 
+            return 1; 
+        } 
+
+    // Adding clients to the list 
+    pthread_mutex_lock(&clients_mutex); 
+    for (int i = 0; i < MAX_CLIENT; i++) {
+        if (client_sockets[i] == 0) {
+            client_sockets[i] = *new_fd; 
+            break; 
+        }
     } 
-    
+    pthread_mutex_unlock(&clients_mutex); 
+
+    // Create a thread for each client 
+    if (pthread_create(&tid, NULL, handle_client, &new_fd) != 0) { 
+        perror("Error to create another thread for client"); 
+    } 
+
     printf("Connection accepted\n");
 
-
-    close(new_fd); 
-   
+    }
 
     close(sockfd); 
     return 0; 
