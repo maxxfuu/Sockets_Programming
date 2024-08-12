@@ -8,6 +8,48 @@
 
 #define MYPORT "8080" 
 #define BACKLOG 5 
+#define MAX_CLIENT 100 
+
+
+int client_sockets[MAX_CLIENT] 
+pthread_mutex_t client_mutex = PTHREAD_MUTEX_INITALIZER; 
+
+void *handle_clint(void *arg) {
+
+    int client_socket = *(int *)arg; // type casting and dereferencing operation 
+    char buffer[1024]; 
+    int bytes_received; 
+
+    while ((bytes_received = recv(clinet_socket, buffer, sizeof(buffer) , 0)) > 0 ) {
+
+        buffer[bytes_received] = '\0'; 
+        printf("Received: %s\n", buffer); 
+
+        // Broadcast mesage to all other clients
+        pthread_mutex_lock(&clients_mutex); 
+        for(int i = 0; i < MAX_CLIENT; i++) { 
+            if(clinet_sockets[i] != 0 && client_sockets[i] != clinet_socket) {
+                send(client_sockets[i], buffer, bytes_received, 0); 
+            }
+        }
+        pthread_mutex_unlock(&clinets_mutex); 
+    }
+
+
+    // Remove client from list and close socket 
+    pthread_mutex_lock(&client_mutex); 
+    for (int i = 0; i < MAX_CLIENT; i++) {
+        if (client_sockets[i] == client socket) {
+            client_socket[i] = 0; 
+            break; 
+        } 
+    }
+
+    pthread_mutex_unlock(&client_mutex); 
+
+    close(client_socket); 
+    return NULL; 
+}
 
 int main(void) { 
     struct sockaddr_storage client_addr;
