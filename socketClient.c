@@ -40,11 +40,11 @@ int main() {
     // Hooray... Maybe ??? 
     printf("Connected to server on 127.0.0.1\n"); 
 
-    // Conncet... 
+    // Send to and recieve after connnecting. 
+    
+     
 
-    // Send to and recieve after connnecting.  
-
-    closm(sockfd); 
+    close(sockfd); 
     return 0; 
 
 } 
