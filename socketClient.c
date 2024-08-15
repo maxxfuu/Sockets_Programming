@@ -11,6 +11,8 @@ int main() {
 
     int sockfd; 
     struct sockaddr_in serv_addr; 
+    char buffer[1024]; 
+    int bytes_received; 
 
     // (Step 1:) Create a socket. 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -40,9 +42,23 @@ int main() {
     // Hooray... Maybe ??? 
     printf("Connected to server on 127.0.0.1\n"); 
 
-    // Send to and recieve after connnecting. 
+
+
+    // Communication Loop: Send and receive messages
+    while(1) { 
+        //Send a message to the server 
+        printf("Enter Message: "); 
+        fget(buffer, sizeof(buffer), stdin); 
+
+        // Remove newline character from the input 
+        size_t len = strlen(buffer); 
+        if(len > 0 && buffer[len -1] = "\n") { 
+            buffer[len - 1] = '\0'; 
+        }
+
     
-     
+    }
+
 
     close(sockfd); 
     return 0; 
