@@ -45,18 +45,17 @@ int main() {
 
 
     // Communication Loop: Send and receive messages
-    while(1) { 
-        //Send a message to the server 
-        printf("Enter Message: "); 
-        fget(buffer, sizeof(buffer), stdin); 
+    while(1) {
+        // Send a message to the server
+        printf("Enter Message: ");
+        fget(buffer, sizeof(buffer), stdin);
 
-        // Remove newline character from the input 
-        size_t len = strlen(buffer); 
-        if(len > 0 && buffer[len -1] = "\n") { 
-            buffer[len - 1] = '\0'; 
+        // Remove newline character from the input
+        size_t len = strlen(buffer);
+        if (len > 0 && buffer[len - 1] == "\n")
+        {
+            buffer[len - 1] = '\0';
         }
-
-    
     }
 
 
