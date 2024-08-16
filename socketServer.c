@@ -101,7 +101,7 @@ int main(void) {
     // Accept for incoming connections 
     while(1) {
         client_addr_len = sizeof(client_addr); 
-        new_fd = malloc(sizeof(int)); // To allocate memory for the new socket descriptor 
+        int *new_fd = malloc(sizeof(int)); // To allocate memory for the new socket descriptor 
         *new_fd = accept(sockfd, (struct sockaddr*)&client_addr, &client_addr_len); 
         if (*new_fd == -1) { 
             perror("Accept Failed"); 

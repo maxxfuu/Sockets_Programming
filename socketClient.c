@@ -48,17 +48,34 @@ int main() {
     while(1) {
         // Send a message to the server
         printf("Enter Message: ");
-        fget(buffer, sizeof(buffer), stdin);
+        fgets(buffer, sizeof(buffer), stdin);
 
         // Remove newline character from the input
         size_t len = strlen(buffer);
-        if (len > 0 && buffer[len - 1] == "\n")
+        if (len > 0 && buffer[len - 1] == 'n')
         {
             buffer[len - 1] = '\0';
-        }
-    }
+        } 
 
+        send(sockfd, buffer, strlen(buffer), 0); 
 
+        //Check for exit condition 
+        if (strcmp(buffer, "exit") == 0) { 
+            printf("Exiting...\n"); 
+            break; 
+        } 
+
+        //Recieve a message from the server 
+        bytes_received = recv(sockfd, buffer, sizeof(buffer) -1, 0); 
+        if (bytes_received <= 0) { 
+            printf("Server close the connection. \n"); 
+            break; 
+        } 
+        buffer[bytes_received] = '\0';
+        printf("Server: %s\n", buffer);
+    } 
+
+    // Close the socket 
     close(sockfd); 
     return 0; 
 
