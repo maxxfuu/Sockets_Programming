@@ -25,6 +25,8 @@ void *handle_client(void *arg) {
         buffer[bytes_received] = '\0'; 
         printf("Received: %s\n", buffer); 
 
+        // send(client_socket, buffer, bytes_received, 0);  
+
         // Broadcast mesage to all other clients
         pthread_mutex_lock(&clients_mutex); 
         for(int i = 0; i < MAX_CLIENT; i++) { 
@@ -120,8 +122,9 @@ int main(void) {
     pthread_mutex_unlock(&clients_mutex); 
 
     // Create a thread for each client 
-    if (pthread_create(&tid, NULL, handle_client, &new_fd) != 0) { 
+    if (pthread_create(&tid, NULL, handle_client, new_fd) != 0) { 
         perror("Error to create another thread for client"); 
+        free(new_fd); 
     } 
 
     printf("Connection accepted\n");

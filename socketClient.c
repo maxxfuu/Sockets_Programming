@@ -3,9 +3,17 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
-#include <sys/socket.h>
+#include <sys/socket.h> 
+#include <pthread.h> 
 
 # define PORT 8080 // Up for definition 
+
+void *recieve_message(void *socket_desc) { 
+    int sockfd = *(int *)socket_desc; 
+    char buffer[1024]; 
+    int bytes_received; 
+}
+
 
 int main() { 
 
@@ -41,8 +49,6 @@ int main() {
 
     // Hooray... Maybe ??? 
     printf("Connected to server on 127.0.0.1\n"); 
-
-
 
     // Communication Loop: Send and receive messages
     while(1) {
