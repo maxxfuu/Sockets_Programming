@@ -15,18 +15,23 @@ int client_sockets[MAX_CLIENT];
 pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER; 
 
 void *handle_client(void *arg) {
-
     int client_socket = *(int *)arg; // type casting and dereferencing operation 
+    free(arg); // free the allocated memory for the socket descriptor 
     char buffer[1024]; 
-    int bytes_received; 
+    int bytes_received;
+    char message[1064]; // buffer to hold the message with the id. 
+
+    // assign a unique id to the client
+    int client_id = client_socket; // using socket descriptor as an id. 
+
 
     while ((bytes_received = recv(client_socket, buffer, sizeof(buffer) , 0)) > 0 ) {
 
         buffer[bytes_received] = '\0'; 
-        printf("Received: %s\n", buffer); 
+        printf("Client %d: %s\n", client_id, buffer); 
 
-        // send(client_socket, buffer, bytes_received, 0);  
-
+        //Prepend the client id to the message
+        snprintf(message, sizeof(message), "Client %d: %s", client_id, buffer); 
         // Broadcast mesage to all other clients
         pthread_mutex_lock(&clients_mutex); 
         for(int i = 0; i < MAX_CLIENT; i++) { 

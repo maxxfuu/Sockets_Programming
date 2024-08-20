@@ -33,7 +33,7 @@ int main() {
     int sockfd; 
     struct sockaddr_in serv_addr; 
     char buffer[1024]; 
-    int bytes_received; 
+    pthread_t recv_thread; 
 
     // (Step 1:) Create a socket. 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
@@ -63,6 +63,13 @@ int main() {
     // Hooray... Maybe ??? 
     printf("Connected to server on 127.0.0.1\n"); 
 
+    // Create a thread to reieve message from server 
+    if(pthread_create(&recv_thread, NULL, receive_messages, &sockfd) != 0) { 
+        perror("Could not create recieve thread"); 
+        close(sockfd); 
+        exit(EXIT_FAILURE); 
+    }
+
     // Communication Loop: Send and receive messages
     while(1) {
         // Send a message to the server
@@ -83,21 +90,13 @@ int main() {
             printf("Exiting...\n"); 
             break; 
         } 
-
-        //Recieve a message from the server 
-        bytes_received = recv(sockfd, buffer, sizeof(buffer) -1, 0); 
-        if (bytes_received <= 0) { 
-            printf("Server close the connection. \n"); 
-            break; 
-        } 
-        buffer[bytes_received] = '\0';
-        printf("Server: %s\n", buffer);
     } 
+
+    pthread_join(recv_thread, NULL);  
 
     // Close the socket 
     close(sockfd); 
     return 0; 
-
 } 
 
 // socket(Specifies IPv4 or IPv6, Specifies TCP or UDP and SOCK_STREAM is TCP, 0 lets the system choose the appropriate protocol
