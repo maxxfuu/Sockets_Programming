@@ -9,6 +9,6 @@
 #include <sys/socket.h>
 
 // function declaration 
-void *receive_messages(void *socket_desc); 
+void *handle_client(void *socket_desc); 
 
 #endif 
