@@ -1,4 +1,4 @@
-#include "socket_client.c" 
+#include "socket_client.h" 
 
 int main() { 
 
@@ -46,7 +46,10 @@ int main() {
     while(1) {
         // Send a message to the server
         printf("Enter Message: ");
-        fgets(buffer, sizeof(buffer), stdin);
+        fflush(stdout); 
+        if(fgets(buffer, sizeof(buffer), stdin) == NULL) {
+            break; 
+        }
 
         // Remove newline character from the input
         size_t len = strlen(buffer);
@@ -54,8 +57,12 @@ int main() {
         {
             buffer[len - 1] = '\0';
         } 
-
-        send(sockfd, buffer, strlen(buffer), 0); 
+        
+        if(strlen(buffer) > 0) { 
+            send(sockfd, buffer, strlen(buffer), 0); 
+            print_timestamp(); 
+            printf("YOU: %s\n", buffer); 
+        }
 
         //Check for exit condition 
         if (strcmp(buffer, "exit") == 0) { 

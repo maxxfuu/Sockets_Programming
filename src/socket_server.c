@@ -1,20 +1,15 @@
+#include "socket_server.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
-#include <pthread/pthread.h> 
 
-#include "socket_server.h"
-
-#define MYPORT "8080" 
-#define BACKLOG 5 
-#define MAX_CLIENT 100 
-
-int client_sockets[MAX_CLIENT]; 
-pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER; 
+//Initialize clients_mutex 
+int client_sockets[MAX_CLIENT];
+pthread_mutex_t clients_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void *handle_client(void *arg) {
     int client_socket = *(int *)arg; // type casting and dereferencing operation 

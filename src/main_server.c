@@ -1,11 +1,19 @@
-#include "socket_server.c"
+#include "socket_server.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <pthread.h>
 
 int main(void) { 
     struct sockaddr_storage client_addr;
     struct sockaddr_in serv_addr; 
     socklen_t client_addr_len = sizeof(client_addr);
     struct addrinfo hints, *res;
-    int sockfd, *new_fd; // listening file descriptor, connection file descriptor 
+    int sockfd; // listening file descriptor, connection file descriptor 
     int status; 
     pthread_t tid; 
 

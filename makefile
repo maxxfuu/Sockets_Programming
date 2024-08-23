@@ -1,11 +1,10 @@
-# Define the compiler and flags
+# Define the com# Define the compiler and flags
 CC = clang
-CFLAGS = -Wall -Wextra -pthread
+CFLAGS = -Wall -Wextra -pthread -Iinclude
 
 # Define directories
 SRC_DIR = src
 OBJ_DIR = obj
-INCLUDE_DIR = include
 
 # Define targets
 SERVER = server
@@ -32,10 +31,14 @@ $(CLIENT): $(CLIENT_OBJ)
 
 # Compile object files
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -I$(INCLUDE_DIR) -c $< -o $@
+	$(CC) $(CFLAGS) -c $< -o $@
 
 # Ensure obj directory exists
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
-# Clean
+# Clean up
+clean:
+	rm -f $(SERVER) $(CLIENT) $(OBJ_DIR)/*.o
+
+.PHONY: all clean
