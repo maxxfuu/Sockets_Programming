@@ -49,6 +49,7 @@
         "vector": "cpp",
         "algorithm": "cpp",
         "list": "cpp",
-        "pthread.h": "c"
+        "pthread.h": "c",
+        "test_utils.h": "c"
     }
 }
