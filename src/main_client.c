@@ -7,7 +7,7 @@ int main() {
     char buffer[1024]; 
     pthread_t recv_thread; 
 
-    // (Step 1:) Create a socket. 
+    // (Step 1:) Create a socket. TCP meaning we are using TCP  
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         perror("Socket Failed: "); 
         exit(EXIT_FAILURE); 

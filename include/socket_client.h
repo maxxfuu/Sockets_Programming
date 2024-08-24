@@ -14,8 +14,6 @@
 // function declaration 
 void *receive_messages(void *arg);  
 
-
-
 // Time stamp function 
 void print_timestamp();
 
