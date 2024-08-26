@@ -1,2 +1,2 @@
-server 
-client 
+./bin/server 
+./bin/client 
