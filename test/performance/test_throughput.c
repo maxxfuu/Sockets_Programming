@@ -1,4 +1,7 @@
-#include "test_utils.h"
+#include "../test/test_utils.h"
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h> 
 
 double measure_throughput(int sockfd, int data_size, int iterations) {
     char *data = malloc(data_size);

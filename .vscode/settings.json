@@ -50,6 +50,7 @@
         "algorithm": "cpp",
         "list": "cpp",
         "pthread.h": "c",
-        "test_utils.h": "c"
+        "test_utils.h": "c",
+        "socket.h": "c"
     }
 }

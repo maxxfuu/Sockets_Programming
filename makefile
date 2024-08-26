@@ -1,51 +1,55 @@
-# Define the compiler and flags
+# Compiler and flags
 CC = clang
-CFLAGS = -Wall -Wextra -pthread -Iinclude -Itests
+CFLAGS = -Wall -Wextra -pthread -Iinclude
 
-# Define directories
+# Directories
 SRC_DIR = src
 OBJ_DIR = obj
-TEST_DIR = tests
+TEST_DIR = test
+BIN_DIR = bin
 
-# Define targets
-SERVER = server
-CLIENT = client
+# Source files
+SERVER_SRC = $(wildcard $(SRC_DIR)/server/*.c)
+CLIENT_SRC = $(wildcard $(SRC_DIR)/client/*.c)
+TEST_SRC = $(wildcard $(TEST_DIR)/performance/*.c) $(TEST_DIR)/test_main.c
 
-# Define source files
-SERVER_SRC = $(SRC_DIR)/socket_server.c $(SRC_DIR)/main_server.c
-CLIENT_SRC = $(SRC_DIR)/socket_client.c $(SRC_DIR)/main_client.c
-TEST_SRC = $(TEST_DIR)/test_throughput.c $(TEST_DIR)/test_latency.c $(TEST_DIR)/test_error_rate.c
-
-# Define object files
+# Object files
 SERVER_OBJ = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SERVER_SRC))
 CLIENT_OBJ = $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(CLIENT_SRC))
-TEST_OBJ = $(patsubst $(TEST_DIR)/%.c,$(OBJ_DIR)/%.o,$(TEST_SRC))
+TEST_OBJ = $(patsubst $(TEST_DIR)/%.c,$(OBJ_DIR)/test/%.o,$(TEST_SRC))
 
-# Default target
-all: $(SERVER) $(CLIENT)
+# Executables
+SERVER = $(BIN_DIR)/server
+CLIENT = $(BIN_DIR)/client
+TEST_RUNNER = $(BIN_DIR)/test_runner
 
-# Compile server
-$(SERVER): $(SERVER_OBJ) $(TEST_OBJ)
+# Targets
+.PHONY: all clean test
+
+all: $(SERVER) $(CLIENT) $(TEST_RUNNER)
+
+$(SERVER): $(SERVER_OBJ) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Compile client
-$(CLIENT): $(CLIENT_OBJ) $(TEST_OBJ)
+$(CLIENT): $(CLIENT_OBJ) | $(BIN_DIR)
 	$(CC) $(CFLAGS) -o $@ $^
 
-# Compile object files for src
+$(TEST_RUNNER): $(TEST_OBJ) $(filter-out $(OBJ_DIR)/server/main_server.o $(OBJ_DIR)/client/main_client.o, $(SERVER_OBJ) $(CLIENT_OBJ)) | $(BIN_DIR)
+	$(CC) $(CFLAGS) -o $@ $^
+
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Compile object files for tests
-$(OBJ_DIR)/%.o: $(TEST_DIR)/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/test/%.o: $(TEST_DIR)/%.c | $(OBJ_DIR)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Ensure obj directory exists
-$(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+$(BIN_DIR) $(OBJ_DIR):
+	mkdir -p $@
 
-# Clean up
 clean:
-	rm -f $(SERVER) $(CLIENT) $(OBJ_DIR)/*.o
+	rm -rf $(OBJ_DIR) $(BIN_DIR)
 
-.PHONY: all clean
+test: $(TEST_RUNNER)
+	./$(TEST_RUNNER)

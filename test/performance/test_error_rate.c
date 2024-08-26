@@ -1,3 +1,7 @@
+#include <stdlib.h>
+#include <string.h>
+#include <sys/socket.h> 
+
 double measure_error_rate(int sockfd, int data_size, int iterations) {
     char *send_data = malloc(data_size);
     char *recv_data = malloc(data_size);
