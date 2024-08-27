@@ -1,24 +1,41 @@
-#include "../test/test_utils.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/socket.h> 
+#include <sys/socket.h>
+#include <sys/time.h>
+#include <errno.h>
+#include <time.h>
 
 double measure_throughput(int sockfd, int data_size, int iterations) {
     char *data = malloc(data_size);
+    if (!data) {
+        perror("Failed to allocate memory");
+        return -1;
+    }
     memset(data, 'A', data_size);
     
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
     
     for (int i = 0; i < iterations; i++) {
-        send(sockfd, data, data_size, 0);
+        int bytes_sent = 0;
+        while (bytes_sent < data_size) {
+            int ret = send(sockfd, data + bytes_sent, data_size - bytes_sent, 0);
+            if (ret == -1) {
+                if (errno == EINTR) continue;
+                perror("send failed");
+                free(data);
+                return -1;
+            }
+            bytes_sent += ret;
+        }
     }
     
-    gettimeofday(&end, NULL);
+    clock_gettime(CLOCK_MONOTONIC, &end);
     free(data);
     
-    double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_usec - start.tv_usec) / 1e6;
-    double throughput = (data_size * iterations * 8) / (time_taken * 1e6); // Mbps
+    double time_taken = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    double throughput = (data_size * iterations * 8.0) / (time_taken * 1e6); // Mbps
     
     return throughput;
 }
