@@ -27,8 +27,8 @@ close(); // Closes a socket
 ```
 Socket types:
 ```c
-Stream sockets (SOCK_STREAM); // For TCP connections
-Datagram sockets (SOCK_DGRAM); // For UDP connections
+Stream sockets (SOCK_STREAM): For TCP connections
+Datagram sockets (SOCK_DGRAM): For UDP connections
 ```
 
 
