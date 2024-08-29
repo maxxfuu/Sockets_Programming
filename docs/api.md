@@ -17,18 +17,18 @@ Header files:
 ```
 Key functions in the socket API:
 ```c
-socket(): Creates a new socket
-bind(): Associates a socket with a specific address and port
-listen(): Marks a socket as passive, ready to accept incoming connections
-accept(): Accepts an incoming connection attempt on a socket
-connect(): Initiates a connection on a socket
-send()/recv(): Send or receive data on a connected socket
-close(): Closes a socket
+socket(); // Creates a new socket
+bind(); // Associates a socket with a specific address and port
+listen(); // Marks a socket as passive, ready to accept incoming connections
+accept(); // Accepts an incoming connection attempt on a socket
+connect(); // Initiates a connection on a socket
+send()/recv(); // Send or receive data on a connected socket
+close(); // Closes a socket
 ```
 Socket types:
 ```c
-Stream sockets (SOCK_STREAM): For TCP connections
-Datagram sockets (SOCK_DGRAM): For UDP connections
+Stream sockets (SOCK_STREAM); // For TCP connections
+Datagram sockets (SOCK_DGRAM); // For UDP connections
 ```
 
 
